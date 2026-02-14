@@ -94,6 +94,12 @@
         color: #555;
     }
 
+    .romaji {
+        font-size: 18px;
+        margin-top: 8px;
+        color: #555;
+    }
+
     @media (min-width: 600px) {
         .controls {
             flex-direction: row;
@@ -133,10 +139,18 @@ let flipped = false;
 fetch("words.txt")
     .then(res => res.text())
     .then(text => {
-        words = text.trim().split("\n").map(line => {
-            const [swedish, japanese] = line.split(",");
-            return { swedish, japanese };
-        });
+        words = text
+            .split("\n")
+            .map(line => line.trim())
+            .filter(line => 
+                line.length > 0 &&     // not empty
+                !line.startsWith("#")  // not a comment
+            )
+            .map(line => {
+                const [swedish, japanese, romaji] = line.split(",");
+                return { swedish, japanese, romaji };
+            });
+
         shuffleArray(words);
         updateCard();
     });
@@ -151,8 +165,17 @@ function shuffleArray(array) {
 function updateCard() {
     flipped = false;
     document.getElementById("card").classList.remove("flipped");
-    document.getElementById("front").innerText = words[currentIndex].swedish;
-    document.getElementById("back").innerText = words[currentIndex].japanese;
+
+    document.getElementById("front").innerText =
+        words[currentIndex].swedish;
+
+    document.getElementById("back").innerHTML = `
+        <div>
+            <div>${words[currentIndex].japanese}</div>
+            <div class="romaji">${words[currentIndex].romaji}</div>
+        </div>
+    `;
+
     document.getElementById("progress").innerText =
         `${currentIndex + 1} / ${words.length}`;
 }

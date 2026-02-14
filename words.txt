@@ -1,6 +1,12 @@
-hej,こんにちは
-tack,ありがとう
-vatten,水
-bok,本
-hund,犬
+# Greetings
+hej,こんにちは,konnichiwa
+god morgon,おはよう,ohayou
 
+# Polite words
+tack,ありがとう,arigatou
+# hej då,さようなら,sayounara   (disabled for now)
+
+
+vatten,水,
+bok,本,
+hund,犬,

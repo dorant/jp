@@ -1,0 +1,6 @@
+hej,こんにちは
+tack,ありがとう
+vatten,水
+bok,本
+hund,犬
+

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Swedish → Japanese Flashcards</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        background: #f4f6f9;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+    }
+
+    h1 {
+        font-size: 20px;
+        margin-bottom: 10px;
+        color: #333;
+    }
+
+    .card-container {
+        perspective: 1000px;
+        width: 90%;
+        max-width: 400px;
+        height: 200px;
+    }
+
+    .card {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        transform-style: preserve-3d;
+        transition: transform 0.6s;
+    }
+
+    .card.flipped {
+        transform: rotateY(180deg);
+    }
+
+    .card-face {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        border-radius: 16px;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        background: white;
+    }
+
+    .card-back {
+        transform: rotateY(180deg);
+        background: #e6f0ff;
+    }
+
+    .controls {
+        margin-top: 20px;
+        width: 90%;
+        max-width: 400px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    button {
+        padding: 14px;
+        font-size: 16px;
+        border: none;
+        border-radius: 12px;
+        background: #4a90e2;
+        color: white;
+        cursor: pointer;
+    }
+
+    button:active {
+        transform: scale(0.98);
+    }
+
+    .secondary {
+        background: #666;
+    }
+
+    .progress {
+        margin-top: 15px;
+        font-size: 14px;
+        color: #555;
+    }
+
+    @media (min-width: 600px) {
+        .controls {
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+        button {
+            flex: 1 1 48%;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<h1>Swedish → Japanese</h1>
+
+<div class="card-container" onclick="flipCard()">
+    <div class="card" id="card">
+        <div class="card-face" id="front"></div>
+        <div class="card-face card-back" id="back"></div>
+    </div>
+</div>
+
+<div class="controls">
+    <button onclick="nextWord()">Next</button>
+    <button onclick="playCurrent()">🔊 Play</button>
+    <button class="secondary" onclick="shuffleDeck()">Shuffle</button>
+</div>
+
+<div class="progress" id="progress"></div>
+
+<script>
+let words = [];
+let currentIndex = 0;
+let flipped = false;
+
+fetch("words.txt")
+    .then(res => res.text())
+    .then(text => {
+        words = text.trim().split("\n").map(line => {
+            const [swedish, japanese] = line.split(",");
+            return { swedish, japanese };
+        });
+        shuffleArray(words);
+        updateCard();
+    });
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+function updateCard() {
+    flipped = false;
+    document.getElementById("card").classList.remove("flipped");
+    document.getElementById("front").innerText = words[currentIndex].swedish;
+    document.getElementById("back").innerText = words[currentIndex].japanese;
+    document.getElementById("progress").innerText =
+        `${currentIndex + 1} / ${words.length}`;
+}
+
+function flipCard() {
+    flipped = !flipped;
+    document.getElementById("card").classList.toggle("flipped");
+    if (flipped) playJapanese();
+    else playSwedish();
+}
+
+function nextWord() {
+    currentIndex++;
+    if (currentIndex >= words.length) {
+        shuffleArray(words);
+        currentIndex = 0;
+    }
+    updateCard();
+}
+
+function shuffleDeck() {
+    shuffleArray(words);
+    currentIndex = 0;
+    updateCard();
+}
+
+function speak(text, lang) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = lang;
+    speechSynthesis.speak(utterance);
+}
+
+function playSwedish() {
+    speak(words[currentIndex].swedish, "sv-SE");
+}
+
+function playJapanese() {
+    speak(words[currentIndex].japanese, "ja-JP");
+}
+
+function playCurrent() {
+    if (flipped) playJapanese();
+    else playSwedish();
+}
+</script>
+
+</body>
+</html>
+

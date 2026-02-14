@@ -1,3 +1,6 @@
+# The format of each line is:
+# swedish,japanese,romaji,mp3file
+
 # Greetings
 hej,こんにちは,konnichiwa
 god morgon,おはよう,ohayou

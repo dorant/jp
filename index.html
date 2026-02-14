@@ -131,10 +131,13 @@
 
 <div class="progress" id="progress"></div>
 
+<audio id="audioPlayer"></audio>
+
 <script>
 let words = [];
 let currentIndex = 0;
 let flipped = false;
+const audioPlayer = document.getElementById("audioPlayer");
 
 fetch("words.txt")
     .then(res => res.text())
@@ -147,8 +150,14 @@ fetch("words.txt")
                 !line.startsWith("#")  // not a comment
             )
             .map(line => {
-                const [swedish, japanese, romaji] = line.split(",");
-                return { swedish, japanese, romaji };
+                const parts = line.split(",").map(p => p.trim());
+
+                return {
+                    swedish: parts[0] || "",
+                    japanese: parts[1] || "",
+                    romaji: parts[2] || "",
+                    audio: parts[3] || ""
+                };
             });
 
         shuffleArray(words);
@@ -166,14 +175,27 @@ function updateCard() {
     flipped = false;
     document.getElementById("card").classList.remove("flipped");
 
+    const word = words[currentIndex];
+
     document.getElementById("front").innerText =
-        words[currentIndex].swedish;
+        word.swedish || "(no word)";
+
+    let backContent = "";
+
+    if (word.japanese) {
+        backContent += `<div>${word.japanese}</div>`;
+    }
+
+    if (word.romaji) {
+        backContent += `<div class="romaji">${word.romaji}</div>`;
+    }
+
+    if (!backContent) {
+        backContent = "<div>(no translation)</div>";
+    }
 
     document.getElementById("back").innerHTML = `
-        <div>
-            <div>${words[currentIndex].japanese}</div>
-            <div class="romaji">${words[currentIndex].romaji}</div>
-        </div>
+        <div>${backContent}</div>
     `;
 
     document.getElementById("progress").innerText =
@@ -183,8 +205,10 @@ function updateCard() {
 function flipCard() {
     flipped = !flipped;
     document.getElementById("card").classList.toggle("flipped");
-    if (flipped) playJapanese();
-    else playSwedish();
+
+    if (flipped) {
+        playAudio();
+    }
 }
 
 function nextWord() {
@@ -202,23 +226,18 @@ function shuffleDeck() {
     updateCard();
 }
 
-function speak(text, lang) {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = lang;
-    speechSynthesis.speak(utterance);
-}
+function playAudio() {
+    const file = words[currentIndex].audio;
+    if (!file) return;   // no audio? do nothing
 
-function playSwedish() {
-    speak(words[currentIndex].swedish, "sv-SE");
-}
-
-function playJapanese() {
-    speak(words[currentIndex].japanese, "ja-JP");
+    audioPlayer.pause();
+    audioPlayer.src = file;
+    audioPlayer.load();
+    audioPlayer.play().catch(() => {});
 }
 
 function playCurrent() {
-    if (flipped) playJapanese();
-    else playSwedish();
+    playAudio();
 }
 </script>
 

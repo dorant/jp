@@ -1,15 +1,36 @@
 # The format of each line is:
-# swedish,japanese,romaji,mp3file
+# english,japanese,romaji,mp3file
 
-# Greetings
-hej,こんにちは,konnichiwa
-god morgon,おはよう,ohayou
+[Frequent]
+Good morning,おはようございます。,,001.mp3
+Hello./Good afternoon. (A rather informal greeting used from about 10:00 A.M. until sundown.),こんにちは。,,002.mp3
+Good evening.,こんばんは。,,003.mp3
+See you.,じゃ、また。,,004.mp3
+Good-bye.,さようなら。,,005.mp3
 
-# Polite words
-tack,ありがとう,arigatou
-# hej då,さようなら,sayounara   (disabled for now)
+(Said when entering another person's room.),しつれいします。,,006.mp3
+Good-bye. (Said on formal occasions.),しつれいします。,,007.mp3
+Good-bye. (Said when leaving the office before other people.),おさきにしつれいします。,,008_A.mp3
+Good-bye. (Said when your colleague leaves the office before you.),おつかれさま（でした）。,,008_B.mp3
+Please.,どうぞ。,,009_A.mp3
+Thank you.,ありがとうございます。,,009_B.mp3
+Not at all.,いいえ。,,009_C.mp3
+(Said before eating a meal.),いただきます。,,010.mp3
+(Said after eating a meal.),ごちそうさま（でした）。,,011.mp3
+
+Excuse me.,すみません。,,012.mp3
+I'm sorry.,すみません。,,013.mp3
+Wait just a moment\, please.,ちょっとまってください。,,014.mp3
+Once more\, please.,もういちどおねがいします。,,015.mp3
 
 
-vatten,水,
-bok,本,
-hund,犬,
+#[Basics]
+#vatten,水,
+#bok,本,
+#hund,犬,
+#[Greetings]
+#Good morning,こんにちは,konnichiwa
+#god morgon,おはよう,ohayou
+#[Polite word]
+#tack,ありがとう,arigatou
+#hej då,さようなら,sayounara

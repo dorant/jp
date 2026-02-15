@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Swedish → Japanese Flashcards</title>
+<title>English → Japanese Flashcards</title>
 
 <style>
     body {
@@ -42,19 +42,21 @@
         transform: rotateY(180deg);
     }
 
-    .card-face {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        backface-visibility: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 32px;
-        border-radius: 16px;
-        box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-        background: white;
-    }
+ .card-face {
+     position: absolute;
+     width: 100%;
+     height: 100%;
+     backface-visibility: hidden;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     text-align: center;
+     white-space: pre-line;
+     font-size: 32px;
+     border-radius: 16px;
+     box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+     background: white;
+ }
 
     .card-back {
         transform: rotateY(180deg);
@@ -94,10 +96,10 @@
         color: #555;
     }
 
-    .romaji {
-        font-size: 18px;
-        margin-top: 8px;
-        color: #555;
+    .description {
+         font-size: 18px;
+         margin-top: 8px;
+         color: #555;
     }
 
     @media (min-width: 600px) {
@@ -114,7 +116,7 @@
 
 <body>
 
-<h1>Swedish → Japanese</h1>
+<h1>English → Japanese</h1>
 
 <div class="card-container" onclick="flipCard()">
     <div class="card" id="card">
@@ -124,6 +126,11 @@
 </div>
 
 <div class="controls">
+    <div class="controls">
+	<select id="chapterSelect" onchange="changeChapter()">
+	    <!-- Options will be added dynamically -->
+	</select>
+    </div>
     <button onclick="nextWord()">Next</button>
     <button onclick="playCurrent()">🔊 Play</button>
     <button class="secondary" onclick="shuffleDeck()">Shuffle</button>
@@ -133,36 +140,81 @@
 
 <audio id="audioPlayer"></audio>
 
+<script src="https://unpkg.com/wanakana"></script>
+
 <script>
-let words = [];
+let allChapters = {}; // store words by chapter
+let words = [];       // words of current chapter
 let currentIndex = 0;
+let currentChapter = 0;
 let flipped = false;
 const audioPlayer = document.getElementById("audioPlayer");
+const chapterSelect = document.getElementById("chapterSelect");
 
 fetch("words.txt")
     .then(res => res.text())
     .then(text => {
-        words = text
-            .split("\n")
-            .map(line => line.trim())
-            .filter(line => 
-                line.length > 0 &&     // not empty
-                !line.startsWith("#")  // not a comment
-            )
-            .map(line => {
-                const parts = line.split(",").map(p => p.trim());
+        let currentKey = null;
+        text.split("\n").forEach(line => {
+            line = line.trim();
+            if (!line || line.startsWith("#")) return; // skip empty or comment
 
-                return {
-                    swedish: parts[0] || "",
+            const chapterMatch = line.match(/^\[(.+?)\]/); // match [Chapter 0], [Basics], etc.
+            if (chapterMatch) {
+                currentKey = chapterMatch[1];
+                allChapters[currentKey] = [];
+            } else if (currentKey !== null) {
+                const parts = line
+                    .split(/(?<!\\),/) // split on comma not preceded by a backslash
+                    .map(p => p.replace(/\\,/g, ",") // unescape commas
+                               .trim());
+
+                let english = parts[0] || "";
+                let description = "";
+
+                // Check if there is parentheses in the text
+                const match = english.match(/^(.*?)\s*\((.*?)\)\s*$/);
+                if (match) {
+                    english = match[1].trim();     // text before parentheses
+                    description = match[2].trim(); // text inside parentheses
+                }
+                allChapters[currentKey].push({
+                    english: english,
                     japanese: parts[1] || "",
-                    romaji: parts[2] || "",
-                    audio: parts[3] || ""
-                };
-            });
-
-        shuffleArray(words);
-        updateCard();
+                    romaji: parts[2] || wanakana.toRomaji(parts[1]),
+                    audio: parts[3] || "",
+                    description: description
+                });
+            }
+        });
+        populateChapterDropdown();
+        // Select the first chapter by default
+        const firstChapter = Object.keys(allChapters)[0];
+        setChapter(firstChapter);
     });
+
+function populateChapterDropdown() {
+    chapterSelect.innerHTML = ""; // clear existing options
+    Object.keys(allChapters).forEach(chapterName => {
+        const option = document.createElement("option");
+        option.value = chapterName;
+        option.innerText = chapterName;
+        chapterSelect.appendChild(option);
+    });
+}
+
+function setChapter(chapterName) {
+    currentChapter = chapterName;
+    words = allChapters[chapterName] ? [...allChapters[chapterName]] : [];
+    //shuffleArray(words);
+    currentIndex = 0;
+    updateCard();
+    chapterSelect.value = chapterName;
+}
+
+function changeChapter() {
+    setChapter(chapterSelect.value);
+}
 
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -172,34 +224,29 @@ function shuffleArray(array) {
 }
 
 function updateCard() {
+    if (!words.length) {
+        document.getElementById("front").innerText = "(no words in this chapter)";
+        document.getElementById("back").innerHTML = "";
+        document.getElementById("progress").innerText = "0 / 0";
+        return;
+    }
+
     flipped = false;
     document.getElementById("card").classList.remove("flipped");
 
     const word = words[currentIndex];
 
-    document.getElementById("front").innerText =
-        word.swedish || "(no word)";
+    let frontContent = `<div>${word.english}</div>`;
+    if (word.description) frontContent += `<div class="description">${word.description}</div>`;
+    document.getElementById("front").innerHTML = `<div>${frontContent}</div>`;
 
     let backContent = "";
+    if (word.japanese) backContent += `<div>${word.japanese}</div>`;
+    if (word.romaji) backContent += `<div class="description">${word.romaji}</div>`;
+    if (!backContent) backContent = `<div>(no translation)</div>`;
+    document.getElementById("back").innerHTML = `<div>${backContent}</div>`;
 
-    if (word.japanese) {
-        backContent += `<div>${word.japanese}</div>`;
-    }
-
-    if (word.romaji) {
-        backContent += `<div class="romaji">${word.romaji}</div>`;
-    }
-
-    if (!backContent) {
-        backContent = "<div>(no translation)</div>";
-    }
-
-    document.getElementById("back").innerHTML = `
-        <div>${backContent}</div>
-    `;
-
-    document.getElementById("progress").innerText =
-        `${currentIndex + 1} / ${words.length}`;
+    document.getElementById("progress").innerText = `${currentIndex + 1} / ${words.length}`;
 }
 
 function flipCard() {
@@ -214,7 +261,7 @@ function flipCard() {
 function nextWord() {
     currentIndex++;
     if (currentIndex >= words.length) {
-        shuffleArray(words);
+        //shuffleArray(words);
         currentIndex = 0;
     }
     updateCard();
@@ -231,7 +278,7 @@ function playAudio() {
     if (!file) return;   // no audio? do nothing
 
     audioPlayer.pause();
-    audioPlayer.src = file;
+    audioPlayer.src = "audio/" + file;
     audioPlayer.load();
     audioPlayer.play().catch(() => {});
 }
@@ -243,4 +290,3 @@ function playCurrent() {
 
 </body>
 </html>
-

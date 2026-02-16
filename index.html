@@ -6,41 +6,41 @@
 <title>English → Japanese Flashcards</title>
 
 <style>
-    body {
-        margin: 0;
-        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-        background: #f4f6f9;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-    }
+ body {
+     margin: 0;
+     font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+     background: #f4f6f9;
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     justify-content: center;
+     height: 100vh;
+ }
 
-    h1 {
-        font-size: 20px;
-        margin-bottom: 10px;
-        color: #333;
-    }
+ h1 {
+     font-size: 20px;
+     margin-bottom: 10px;
+     color: #333;
+ }
 
-    .card-container {
-        perspective: 1000px;
-        width: 90%;
-        max-width: 400px;
-        height: 200px;
-    }
+ .card-container {
+     perspective: 1000px;
+     width: 90%;
+     max-width: 400px;
+     height: 200px;
+ }
 
-    .card {
-        width: 100%;
-        height: 100%;
-        position: relative;
-        transform-style: preserve-3d;
-        transition: transform 0.6s;
-    }
+ .card {
+     width: 100%;
+     height: 100%;
+     position: relative;
+     transform-style: preserve-3d;
+     transition: transform 0.6s;
+ }
 
-    .card.flipped {
-        transform: rotateY(180deg);
-    }
+ .card.flipped {
+     transform: rotateY(180deg);
+ }
 
  .card-face {
      position: absolute;
@@ -58,59 +58,59 @@
      background: white;
  }
 
-    .card-back {
-        transform: rotateY(180deg);
-        background: #e6f0ff;
-    }
+ .card-back {
+     transform: rotateY(180deg);
+     background: #e6f0ff;
+ }
 
-    .controls {
-        margin-top: 20px;
-        width: 90%;
-        max-width: 400px;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
+ .controls {
+     margin-top: 20px;
+     width: 90%;
+     max-width: 400px;
+     display: flex;
+     flex-direction: column;
+     gap: 10px;
+ }
 
-    button {
-        padding: 14px;
-        font-size: 16px;
-        border: none;
-        border-radius: 12px;
-        background: #4a90e2;
-        color: white;
-        cursor: pointer;
-    }
+ button {
+     padding: 14px;
+     font-size: 16px;
+     border: none;
+     border-radius: 12px;
+     background: #4a90e2;
+     color: white;
+     cursor: pointer;
+ }
 
-    button:active {
-        transform: scale(0.98);
-    }
+ button:active {
+     transform: scale(0.98);
+ }
 
-    .secondary {
-        background: #666;
-    }
+ .secondary {
+     background: #666;
+ }
 
-    .progress {
-        margin-top: 15px;
-        font-size: 14px;
-        color: #555;
-    }
+ .progress {
+     margin-top: 15px;
+     font-size: 14px;
+     color: #555;
+ }
 
-    .description {
-         font-size: 18px;
-         margin-top: 8px;
-         color: #555;
-    }
+ .description {
+     font-size: 18px;
+     margin-top: 8px;
+     color: #555;
+ }
 
-    @media (min-width: 600px) {
-        .controls {
-            flex-direction: row;
-            flex-wrap: wrap;
-        }
-        button {
-            flex: 1 1 48%;
-        }
-    }
+ @media (min-width: 600px) {
+     .controls {
+         flex-direction: row;
+         flex-wrap: wrap;
+     }
+     button {
+         flex: 1 1 48%;
+     }
+ }
 </style>
 </head>
 
@@ -143,149 +143,149 @@
 <script src="https://unpkg.com/wanakana"></script>
 
 <script>
-let allChapters = {}; // store words by chapter
-let words = [];       // words of current chapter
-let currentIndex = 0;
-let currentChapter = 0;
-let flipped = false;
-const audioPlayer = document.getElementById("audioPlayer");
-const chapterSelect = document.getElementById("chapterSelect");
+ let allChapters = {}; // store words by chapter
+ let words = [];       // words of current chapter
+ let currentIndex = 0;
+ let currentChapter = 0;
+ let flipped = false;
+ const audioPlayer = document.getElementById("audioPlayer");
+ const chapterSelect = document.getElementById("chapterSelect");
 
-fetch("words.txt")
-    .then(res => res.text())
-    .then(text => {
-        let currentKey = null;
-        text.split("\n").forEach(line => {
-            line = line.trim();
-            if (!line || line.startsWith("#")) return; // skip empty or comment
+ fetch("words.txt")
+     .then(res => res.text())
+     .then(text => {
+         let currentKey = null;
+         text.split("\n").forEach(line => {
+             line = line.trim();
+             if (!line || line.startsWith("#")) return; // skip empty or comment
 
-            const chapterMatch = line.match(/^\[(.+?)\]/); // match [Chapter 0], [Basics], etc.
-            if (chapterMatch) {
-                currentKey = chapterMatch[1];
-                allChapters[currentKey] = [];
-            } else if (currentKey !== null) {
-                const parts = line
-                    .split(/(?<!\\),/) // split on comma not preceded by a backslash
-                    .map(p => p.replace(/\\,/g, ",") // unescape commas
-                               .trim());
+             const chapterMatch = line.match(/^\[(.+?)\]/); // match [Chapter 0], [Basics], etc.
+             if (chapterMatch) {
+                 currentKey = chapterMatch[1];
+                 allChapters[currentKey] = [];
+             } else if (currentKey !== null) {
+                 const parts = line
+                     .split(/(?<!\\),/) // split on comma not preceded by a backslash
+                     .map(p => p.replace(/\\,/g, ",") // unescape commas
+                                .trim());
 
-                let english = parts[0] || "";
-                let description = "";
+                 let english = parts[0] || "";
+                 let description = "";
 
-                // Check if there is parentheses in the text
-                const match = english.match(/^(.*?)\s*\((.*?)\)\s*$/);
-                if (match) {
-                    english = match[1].trim();     // text before parentheses
-                    description = match[2].trim(); // text inside parentheses
-                }
-                allChapters[currentKey].push({
-                    english: english,
-                    japanese: parts[1] || "",
-                    romaji: parts[2] || wanakana.toRomaji(parts[1]),
-                    audio: parts[3] || "",
-                    description: description
-                });
-            }
-        });
-        populateChapterDropdown();
-        // Select the first chapter by default
-        const firstChapter = Object.keys(allChapters)[0];
-        setChapter(firstChapter);
-    });
+                 // Check if there is parentheses in the text
+                 const match = english.match(/^(.*?)\s*\((.*?)\)\s*$/);
+                 if (match) {
+                     english = match[1].trim();     // text before parentheses
+                     description = match[2].trim(); // text inside parentheses
+                 }
+                 allChapters[currentKey].push({
+                     english: english,
+                     japanese: parts[1] || "",
+                     romaji: parts[2] || wanakana.toRomaji(parts[1]),
+                     audio: parts[3] || "",
+                     description: description
+                 });
+             }
+         });
+         populateChapterDropdown();
+         // Select the first chapter by default
+         const firstChapter = Object.keys(allChapters)[0];
+         setChapter(firstChapter);
+     });
 
-function populateChapterDropdown() {
-    chapterSelect.innerHTML = ""; // clear existing options
-    Object.keys(allChapters).forEach(chapterName => {
-        const option = document.createElement("option");
-        option.value = chapterName;
-        option.innerText = chapterName;
-        chapterSelect.appendChild(option);
-    });
-}
+ function populateChapterDropdown() {
+     chapterSelect.innerHTML = ""; // clear existing options
+     Object.keys(allChapters).forEach(chapterName => {
+         const option = document.createElement("option");
+         option.value = chapterName;
+         option.innerText = chapterName;
+         chapterSelect.appendChild(option);
+     });
+ }
 
-function setChapter(chapterName) {
-    currentChapter = chapterName;
-    words = allChapters[chapterName] ? [...allChapters[chapterName]] : [];
-    //shuffleArray(words);
-    currentIndex = 0;
-    updateCard();
-    chapterSelect.value = chapterName;
-}
+ function setChapter(chapterName) {
+     currentChapter = chapterName;
+     words = allChapters[chapterName] ? [...allChapters[chapterName]] : [];
+     //shuffleArray(words);
+     currentIndex = 0;
+     updateCard();
+     chapterSelect.value = chapterName;
+ }
 
-function changeChapter() {
-    setChapter(chapterSelect.value);
-}
+ function changeChapter() {
+     setChapter(chapterSelect.value);
+ }
 
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-}
+ function shuffleArray(array) {
+     for (let i = array.length - 1; i > 0; i--) {
+         const j = Math.floor(Math.random() * (i + 1));
+         [array[i], array[j]] = [array[j], array[i]];
+     }
+ }
 
-function updateCard() {
-    if (!words.length) {
-        document.getElementById("front").innerText = "(no words in this chapter)";
-        document.getElementById("back").innerHTML = "";
-        document.getElementById("progress").innerText = "0 / 0";
-        return;
-    }
+ function updateCard() {
+     if (!words.length) {
+         document.getElementById("front").innerText = "(no words in this chapter)";
+         document.getElementById("back").innerHTML = "";
+         document.getElementById("progress").innerText = "0 / 0";
+         return;
+     }
 
-    flipped = false;
-    document.getElementById("card").classList.remove("flipped");
+     flipped = false;
+     document.getElementById("card").classList.remove("flipped");
 
-    const word = words[currentIndex];
+     const word = words[currentIndex];
 
-    let frontContent = `<div>${word.english}</div>`;
-    if (word.description) frontContent += `<div class="description">${word.description}</div>`;
-    document.getElementById("front").innerHTML = `<div>${frontContent}</div>`;
+     let frontContent = `<div>${word.english}</div>`;
+     if (word.description) frontContent += `<div class="description">${word.description}</div>`;
+     document.getElementById("front").innerHTML = `<div>${frontContent}</div>`;
 
-    let backContent = "";
-    if (word.japanese) backContent += `<div>${word.japanese}</div>`;
-    if (word.romaji) backContent += `<div class="description">${word.romaji}</div>`;
-    if (!backContent) backContent = `<div>(no translation)</div>`;
-    document.getElementById("back").innerHTML = `<div>${backContent}</div>`;
+     let backContent = "";
+     if (word.japanese) backContent += `<div>${word.japanese}</div>`;
+     if (word.romaji) backContent += `<div class="description">${word.romaji}</div>`;
+     if (!backContent) backContent = `<div>(no translation)</div>`;
+     document.getElementById("back").innerHTML = `<div>${backContent}</div>`;
 
-    document.getElementById("progress").innerText = `${currentIndex + 1} / ${words.length}`;
-}
+     document.getElementById("progress").innerText = `${currentIndex + 1} / ${words.length}`;
+ }
 
-function flipCard() {
-    flipped = !flipped;
-    document.getElementById("card").classList.toggle("flipped");
+ function flipCard() {
+     flipped = !flipped;
+     document.getElementById("card").classList.toggle("flipped");
 
-    if (flipped) {
-        playAudio();
-    }
-}
+     if (flipped) {
+         playAudio();
+     }
+ }
 
-function nextWord() {
-    currentIndex++;
-    if (currentIndex >= words.length) {
-        //shuffleArray(words);
-        currentIndex = 0;
-    }
-    updateCard();
-}
+ function nextWord() {
+     currentIndex++;
+     if (currentIndex >= words.length) {
+         //shuffleArray(words);
+         currentIndex = 0;
+     }
+     updateCard();
+ }
 
-function shuffleDeck() {
-    shuffleArray(words);
-    currentIndex = 0;
-    updateCard();
-}
+ function shuffleDeck() {
+     shuffleArray(words);
+     currentIndex = 0;
+     updateCard();
+ }
 
-function playAudio() {
-    const file = words[currentIndex].audio;
-    if (!file) return;   // no audio? do nothing
+ function playAudio() {
+     const file = words[currentIndex].audio;
+     if (!file) return;   // no audio? do nothing
 
-    audioPlayer.pause();
-    audioPlayer.src = "audio/" + file;
-    audioPlayer.load();
-    audioPlayer.play().catch(() => {});
-}
+     audioPlayer.pause();
+     audioPlayer.src = "audio/" + file;
+     audioPlayer.load();
+     audioPlayer.play().catch(() => {});
+ }
 
-function playCurrent() {
-    playAudio();
-}
+ function playCurrent() {
+     playAudio();
+ }
 </script>
 
 </body>

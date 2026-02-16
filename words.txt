@@ -23,6 +23,17 @@ I'm sorry.,すみません。,,013.mp3
 Wait just a moment\, please.,ちょっとまってください。,,014.mp3
 Once more\, please.,もういちどおねがいします。,,015.mp3
 
+[Numbers]
+0,ゼロ／れい,,0.mp3
+1,いち,,1.mp3
+2,に,,2.mp3
+3,さん,,3.mp3
+4,よん/し,,4.mp3
+5,ご,,5.mp3
+6,ろく,,6.mp3
+7,なな／しち,,7.mp3
+8,はち,,8.mp3
+9,きゅう/く,,9.mp3
 
 #[Basics]
 #vatten,水,

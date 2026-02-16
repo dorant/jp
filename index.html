@@ -114,16 +114,6 @@
      margin-top: 8px;
      color: #555;
  }
-
- @media (min-width: 600px) {
-     .controls {
-         flex-direction: row;
-         flex-wrap: wrap;
-     }
-     button {
-         flex: 1 1 48%;
-     }
- }
 </style>
 </head>
 
@@ -138,12 +128,12 @@
     </div>
 </div>
 
+<div class="progress" id="progress"></div>
+
 <div class="controls">
     <select id="chapterSelect" onchange="changeChapter()"></select>
     <button onclick="shuffleDeck()">Shuffle</button>
 </div>
-
-<div class="progress" id="progress"></div>
 
 <audio id="audioPlayer"></audio>
 

@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>English → Japanese Flashcards</title>
 
+<!-- Swiper CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+
 <style>
  body {
      margin: 0;
@@ -23,11 +26,16 @@
      color: #333;
  }
 
- .card-container {
-     perspective: 1000px;
+ .swiper {
      width: 90%;
      max-width: 400px;
      height: 200px;
+ }
+
+ .swiper-slide {
+     display: flex;
+     align-items: center;
+     justify-content: center;
  }
 
  .card {
@@ -86,10 +94,6 @@
      transform: scale(0.98);
  }
 
- .secondary {
-     background: #666;
- }
-
  .progress {
      margin-top: 15px;
      font-size: 14px;
@@ -118,22 +122,16 @@
 
 <h1>English → Japanese</h1>
 
-<div class="card-container" onclick="flipCard()">
-    <div class="card" id="card">
-        <div class="card-face" id="front"></div>
-        <div class="card-face card-back" id="back"></div>
+<!-- Swiper Container -->
+<div class="swiper mySwiper">
+    <div class="swiper-wrapper" id="swiperWrapper">
+        <!-- Slides generated dynamically -->
     </div>
 </div>
 
 <div class="controls">
-    <div class="controls">
-	<select id="chapterSelect" onchange="changeChapter()">
-	    <!-- Options will be added dynamically -->
-	</select>
-    </div>
-    <button onclick="nextWord()">Next</button>
-    <button onclick="playCurrent()">🔊 Play</button>
-    <button class="secondary" onclick="shuffleDeck()">Shuffle</button>
+    <select id="chapterSelect" onchange="changeChapter()"></select>
+    <button onclick="shuffleDeck()">Shuffle</button>
 </div>
 
 <div class="progress" id="progress"></div>
@@ -141,13 +139,14 @@
 <audio id="audioPlayer"></audio>
 
 <script src="https://unpkg.com/wanakana"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
 <script>
  let allChapters = {}; // store words by chapter
  let words = [];       // words of current chapter
  let currentIndex = 0;
  let currentChapter = 0;
- let flipped = false;
+ let swiper;
  const audioPlayer = document.getElementById("audioPlayer");
  const chapterSelect = document.getElementById("chapterSelect");
 
@@ -155,6 +154,7 @@
      .then(res => res.text())
      .then(text => {
          let currentKey = null;
+
          text.split("\n").forEach(line => {
              line = line.trim();
              if (!line || line.startsWith("#")) return; // skip empty or comment
@@ -178,6 +178,7 @@
                      english = match[1].trim();     // text before parentheses
                      description = match[2].trim(); // text inside parentheses
                  }
+
                  allChapters[currentKey].push({
                      english: english,
                      japanese: parts[1] || "",
@@ -207,8 +208,7 @@
      currentChapter = chapterName;
      words = allChapters[chapterName] ? [...allChapters[chapterName]] : [];
      //shuffleArray(words);
-     currentIndex = 0;
-     updateCard();
+     generateSlides();
      chapterSelect.value = chapterName;
  }
 
@@ -223,68 +223,82 @@
      }
  }
 
- function updateCard() {
-     if (!words.length) {
-         document.getElementById("front").innerText = "(no words in this chapter)";
-         document.getElementById("back").innerHTML = "";
-         document.getElementById("progress").innerText = "0 / 0";
-         return;
-     }
-
-     flipped = false;
-     document.getElementById("card").classList.remove("flipped");
-
-     const word = words[currentIndex];
-
-     let frontContent = `<div>${word.english}</div>`;
-     if (word.description) frontContent += `<div class="description">${word.description}</div>`;
-     document.getElementById("front").innerHTML = `<div>${frontContent}</div>`;
-
-     let backContent = "";
-     if (word.japanese) backContent += `<div>${word.japanese}</div>`;
-     if (word.romaji) backContent += `<div class="description">${word.romaji}</div>`;
-     if (!backContent) backContent = `<div>(no translation)</div>`;
-     document.getElementById("back").innerHTML = `<div>${backContent}</div>`;
-
-     document.getElementById("progress").innerText = `${currentIndex + 1} / ${words.length}`;
+ function shuffleDeck() {
+     shuffleArray(words);
+     generateSlides();
  }
 
- function flipCard() {
-     flipped = !flipped;
-     document.getElementById("card").classList.toggle("flipped");
+ function generateSlides() {
+     const wrapper = document.getElementById("swiperWrapper");
+     wrapper.innerHTML = "";
 
-     if (flipped) {
+     words.forEach((word, index) => {
+         const slide = document.createElement("div");
+         slide.className = "swiper-slide";
+
+         slide.innerHTML = `
+             <div class="card" onclick="flipCard(this, ${index})">
+                 <div class="card-face">
+                     <div>
+                         <div>${word.english}</div>
+                         ${word.description ? `<div class="description">${word.description}</div>` : ""}
+          </div>
+        </div>
+        <div class="card-face card-back">
+          <div>
+            ${word.japanese ? `<div>${word.japanese}</div>` : ""}
+            ${word.romaji ? `<div class="description">${word.romaji}</div>` : ""}
+          </div>
+        </div>
+      </div>
+            `;
+
+         wrapper.appendChild(slide);
+     });
+
+     if (swiper) swiper.destroy(true, true);
+
+     swiper = new Swiper(".mySwiper", {
+         loop: false,
+         grabCursor: true,
+         on: {
+             slideChange: function () {
+                 currentIndex = swiper.activeIndex;
+                 updateProgress();
+             }
+         }
+     });
+
+     currentIndex = 0;
+     updateProgress();
+ }
+
+ function flipCard(element, index) {
+     element.classList.toggle("flipped");
+
+     if (element.classList.contains("flipped")) {
+         currentIndex = index;
          playAudio();
      }
  }
 
- function nextWord() {
-     currentIndex++;
-     if (currentIndex >= words.length) {
-         //shuffleArray(words);
-         currentIndex = 0;
+ function updateProgress() {
+     if (!words.length) {
+         document.getElementById("progress").innerText = "0 / 0";
+         return;
      }
-     updateCard();
- }
-
- function shuffleDeck() {
-     shuffleArray(words);
-     currentIndex = 0;
-     updateCard();
+     document.getElementById("progress").innerText =
+         `${currentIndex + 1} / ${words.length}`;
  }
 
  function playAudio() {
-     const file = words[currentIndex].audio;
-     if (!file) return;   // no audio? do nothing
+     const file = words[currentIndex]?.audio;
+     if (!file) return;
 
      audioPlayer.pause();
      audioPlayer.src = "audio/" + file;
      audioPlayer.load();
      audioPlayer.play().catch(() => {});
- }
-
- function playCurrent() {
-     playAudio();
  }
 </script>
 

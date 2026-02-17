@@ -35,6 +35,15 @@ Once more\, please.,もういちどおねがいします。,,015.mp3
 8,はち,,8.mp3
 9,きゅう/く,,9.mp3
 
+[Countries]
+Japan,にほん,,018_1.mp3
+China,ちゅうごく,,018_2.mp3
+Germany,ドイツ”,,018_3.mp3
+United Kingdom,イギリス,,018_4.mp3
+United States,アメリカ,,018_5.mp3
+Australia,オーストラリア,,018_6.mp3
+India,インド”,,018_7.mp3
+
 #[Basics]
 #vatten,水,
 #bok,本,

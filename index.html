@@ -155,9 +155,14 @@
  let words = [];       // words of current chapter
  let currentChapter = 0;
  let autoFlipTimeout = null;
+ let audioUnlocked = false;
  let swiper;
  const audioPlayer = document.getElementById("audioPlayer");
  const chapterSelect = document.getElementById("chapterSelect");
+
+ // Unlock audio at first user interaction.
+ document.addEventListener("click", unlockAudio, { once: true });
+ document.addEventListener("touchstart", unlockAudio, { once: true });
 
  const flipDelaySlider = document.getElementById("flipDelaySlider");
  const flipDelayLabel = document.getElementById("flipDelayLabel");
@@ -339,6 +344,16 @@
      const index = getCurrentIndex();
      document.getElementById("progress").innerText =
          `${index + 1} / ${words.length}`;
+ }
+
+ function unlockAudio() {
+    if (audioUnlocked) return;
+
+    audioPlayer.play().then(() => {
+        audioPlayer.pause();
+        audioPlayer.currentTime = 0;
+        audioUnlocked = true;
+    }).catch(() => {});
  }
 
  function playAudio() {

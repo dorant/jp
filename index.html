@@ -153,7 +153,6 @@
 <script>
  let allChapters = {}; // store words by chapter
  let words = [];       // words of current chapter
- let currentIndex = 0;
  let currentChapter = 0;
  let autoFlipTimeout = null;
  let swiper;
@@ -228,6 +227,10 @@
      });
  }
 
+ function getCurrentIndex() {
+    return swiper ? swiper.realIndex : 0;
+ }
+
  function setChapter(chapterName) {
      currentChapter = chapterName;
      words = allChapters[chapterName] ? [...allChapters[chapterName]] : [];
@@ -283,11 +286,10 @@
      if (swiper) swiper.destroy(true, true);
 
      swiper = new Swiper(".mySwiper", {
-         loop: false,
+         loop: true,
          grabCursor: true,
          on: {
-             slideChange: function () {
-                 currentIndex = swiper.activeIndex;
+             realIndexChange: function () {
                  updateProgress();
 
                  document.querySelectorAll(".card").forEach(card => {
@@ -299,7 +301,6 @@
          }
      });
 
-     currentIndex = 0;
      updateProgress();
      triggerAutoFlip();
  }
@@ -311,7 +312,6 @@
      element.classList.toggle("flipped");
 
      if (element.classList.contains("flipped")) {
-         currentIndex = index;
          playAudio();
      }
  }
@@ -336,12 +336,13 @@
          document.getElementById("progress").innerText = "0 / 0";
          return;
      }
+     const index = getCurrentIndex();
      document.getElementById("progress").innerText =
-         `${currentIndex + 1} / ${words.length}`;
+         `${index + 1} / ${words.length}`;
  }
 
  function playAudio() {
-     const file = words[currentIndex]?.audio;
+     const file = words[getCurrentIndex()]?.audio;
      if (!file) return;
 
      audioPlayer.pause();

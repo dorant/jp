@@ -305,9 +305,8 @@
  }
 
  function flipCard(element, index) {
-     // If auto mode is active, prevent manual flipping
-     const delay = parseInt(flipDelaySlider.value);
-     if (delay > 0) return;
+     // Cancel pending auto flip on manual interaction
+     clearTimeout(autoFlipTimeout);
 
      element.classList.toggle("flipped");
 

@@ -119,7 +119,9 @@
 
 <body>
 
-<h1>English → Japanese</h1>
+<h1 id="directionTitle" onclick="toggleDirection()" style="cursor:pointer;">
+    English → Japanese
+</h1>
 
 <!-- Swiper Container -->
 <div class="swiper mySwiper">
@@ -154,6 +156,7 @@
  let allChapters = {}; // store words by chapter
  let words = [];       // words of current chapter
  let currentChapter = 0;
+ let isEnglishFirst = true;
  let autoFlipTimeout = null;
  let audioUnlocked = false;
  let swiper;
@@ -222,6 +225,23 @@
          setChapter(firstChapter);
      });
 
+ function toggleDirection() {
+     isEnglishFirst = !isEnglishFirst;
+
+     const title = document.getElementById("directionTitle");
+     title.innerText = isEnglishFirst
+                     ? "English → Japanese"
+                     : "Japanese → English";
+
+     generateSlides(); // rebuild slides with new order
+
+     if (!isEnglishFirst) {
+         setTimeout(() => {
+             playAudio();
+         }, 100);
+     }
+ }
+
  function populateChapterDropdown() {
      chapterSelect.innerHTML = ""; // clear existing options
      Object.keys(allChapters).forEach(chapterName => {
@@ -246,6 +266,11 @@
 
  function changeChapter() {
      setChapter(chapterSelect.value);
+     if (!isEnglishFirst) {
+         setTimeout(() => {
+             playAudio();
+         }, 100);
+     }
  }
 
  function shuffleArray(array) {
@@ -258,6 +283,11 @@
  function shuffleDeck() {
      shuffleArray(words);
      generateSlides();
+     if (!isEnglishFirst) {
+         setTimeout(() => {
+             playAudio();
+         }, 100);
+     }
  }
 
  function generateSlides() {
@@ -268,22 +298,36 @@
          const slide = document.createElement("div");
          slide.className = "swiper-slide";
 
+         const frontContent = isEnglishFirst
+                            ? `
+        <div>${word.english}</div>
+        ${word.description ? `<div class="description">${word.description}</div>` : ""}
+        `
+                                                                              : `
+        ${word.japanese ? `<div>${word.japanese}</div>` : ""}
+        ${word.romaji ? `<div class="description">${word.romaji}</div>` : ""}
+        `;
+
+         const backContent = isEnglishFirst
+                           ? `
+        ${word.japanese ? `<div>${word.japanese}</div>` : ""}
+        ${word.romaji ? `<div class="description">${word.romaji}</div>` : ""}
+        `
+                                                                    : `
+        <div>${word.english}</div>
+        ${word.description ? `<div class="description">${word.description}</div>` : ""}
+        `;
+
          slide.innerHTML = `
              <div class="card" onclick="flipCard(this, ${index})">
                  <div class="card-face">
-                     <div>
-                         <div>${word.english}</div>
-                         ${word.description ? `<div class="description">${word.description}</div>` : ""}
-          </div>
-        </div>
-        <div class="card-face card-back">
-          <div>
-            ${word.japanese ? `<div>${word.japanese}</div>` : ""}
-            ${word.romaji ? `<div class="description">${word.romaji}</div>` : ""}
-          </div>
-        </div>
-      </div>
-            `;
+                     <div>${frontContent}</div>
+                 </div>
+                 <div class="card-face card-back">
+                     <div>${backContent}</div>
+                 </div>
+             </div>
+         `;
 
          wrapper.appendChild(slide);
      });
@@ -301,6 +345,9 @@
                      card.classList.remove("flipped");
                  });
 
+                 if (!isEnglishFirst) {
+                     playAudio();
+                 }
                  triggerAutoFlip();
              }
          }
@@ -316,7 +363,9 @@
 
      element.classList.toggle("flipped");
 
-     if (element.classList.contains("flipped")) {
+     // Play audio when japanese is visible
+     const isFlipped = element.classList.contains("flipped");
+     if (isEnglishFirst == isFlipped) {
          playAudio();
      }
  }
@@ -331,7 +380,9 @@
          const activeSlide = document.querySelector(".swiper-slide-active .card");
          if (activeSlide && !activeSlide.classList.contains("flipped")) {
              activeSlide.classList.add("flipped");
-             playAudio();
+             if (isEnglishFirst) {
+                 playAudio();
+             }
          }
      }, delay);
  }

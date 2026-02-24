@@ -38,11 +38,41 @@ Once more\, please.,もういちどおねがいします。,,015.mp3
 [Countries]
 Japan,にほん,,018_1.mp3
 China,ちゅうごく,,018_2.mp3
-Germany,ドイツ”,,018_3.mp3
+Germany,ドイツ,,018_3.mp3
 United Kingdom,イギリス,,018_4.mp3
 United States,アメリカ,,018_5.mp3
 Australia,オーストラリア,,018_6.mp3
 India,インド”,,018_7.mp3
+
+[L1]
+How do you do? (First time),はじめまして,,L1_1.mp3
+Hello,こんにちは,,002.mp3
+I'm a student,わたしは がくせいです,,L1_3.mp3
+Nice to meet you,どうぞよろしく,,L1_4.mp3
+Nice to meet you(polite),よろしくおねがいします,,L1_5.mp3
+Telphone number,でんわばんごう,,
+This person; this way,こちら,,L1_7.mp3
+This is my mother,こちらはははです,,L1_8.mp3
+
+[L1 Professions]
+secretary,ひしょ,,
+teacher,せんせい,,L1_jobs2.mp3
+student,がくせい,,L1_jobs3.mp3
+doctor,いしゃ,,L1_jobs4.mp3
+nurse,かんごふ,,L1_jobs5.mp3
+bank employee,ぎんこういん,,
+company employee,かいしゃいん,,
+shop assistant,てんいん,,L1_jobs8.mp3
+
+[L1 Countries]
+Sweden,スウェーデン,,
+Germany,ドイツ,,018_3.mp3
+France,フランス,,
+United States,アメリカ,,018_5.mp3
+United Kingdom,イギリス,,018_4.mp3
+Holland,オランダ,,
+China,ちゅうごく,,018_2.mp3
+South Korea,かんこく,,
 
 #[Basics]
 #vatten,水,

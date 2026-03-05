@@ -71,6 +71,21 @@
      background: #e6f0ff;
  }
 
+ .audio-indicator {
+     position: absolute;
+     top: 8px;
+     right: 10px;
+     font-size: 18px;
+ }
+
+ .audio-file {
+     color: #2ecc71; /* green */
+ }
+
+ .audio-tts {
+     color: #999; /* grey */
+ }
+
  .controls {
      margin-top: 20px;
      width: 90%;
@@ -323,12 +338,18 @@
         ${word.description ? `<div class="description">${word.description}</div>` : ""}
         `;
 
+         const audioIndicator = word.audio
+                              ? `<div class="audio-indicator audio-file">🔊</div>`
+                              : `<div class="audio-indicator audio-tts">🤖</div>`;
+
          slide.innerHTML = `
              <div class="card" onclick="flipCard(this, ${index})">
                  <div class="card-face">
+                     ${audioIndicator}
                      <div>${frontContent}</div>
                  </div>
                  <div class="card-face card-back">
+                     ${audioIndicator}
                      <div>${backContent}</div>
                  </div>
              </div>

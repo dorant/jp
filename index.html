@@ -439,7 +439,8 @@
      const utterance = new SpeechSynthesisUtterance(text);
      utterance.lang = "ja-JP"; // Japanese voice
      utterance.rate = 0.9;     // slightly slower for learning
-     utterance.pitch = 1.0;
+     utterance.pitch = 1.05;
+     utterance.volume = 1.0;
 
      // Try to select a Japanese voice if available
      const voices = speechSynthesis.getVoices();

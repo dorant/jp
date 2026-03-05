@@ -167,6 +167,11 @@
  document.addEventListener("click", unlockAudio, { once: true });
  document.addEventListener("touchstart", unlockAudio, { once: true });
 
+ // Preload voices
+ speechSynthesis.onvoiceschanged = () => {
+     speechSynthesis.getVoices();
+ };
+
  const flipDelaySlider = document.getElementById("flipDelaySlider");
  const flipDelayLabel = document.getElementById("flipDelayLabel");
  flipDelaySlider.addEventListener("input", () => {
@@ -407,14 +412,51 @@
     }).catch(() => {});
  }
 
- function playAudio() {
-     const file = words[getCurrentIndex()]?.audio;
-     if (!file) return;
+ function speakJapanese(text) {
+     if (!text) return;
 
-     audioPlayer.pause();
-     audioPlayer.src = "audio/" + file;
-     audioPlayer.load();
-     audioPlayer.play().catch(() => {});
+     const utterance = new SpeechSynthesisUtterance(text);
+     utterance.lang = "ja-JP"; // Japanese voice
+     utterance.rate = 0.9;     // slightly slower for learning
+     utterance.pitch = 1.0;
+
+     // Try to select a Japanese voice if available
+     const voices = speechSynthesis.getVoices();
+
+     // Prefer high quality native Japanese voices
+     const preferredVoices = [
+         "Kyoko",        // macOS
+         "Otoya",        // macOS
+         "Google 日本語", // Android / Chrome
+         "Microsoft Nanami", // Windows
+         "Microsoft Keita"
+     ];
+
+     let voice =
+         voices.find(v => preferredVoices.includes(v.name)) ||
+         voices.find(v => v.lang === "ja-JP") ||
+         voices.find(v => v.lang.startsWith("ja"));
+     if (voice) utterance.voice = voice;
+
+     speechSynthesis.cancel(); // stop previous speech
+     speechSynthesis.speak(utterance);
+ }
+
+ function playAudio() {
+     const word = words[getCurrentIndex()];
+     if (!word) return;
+
+     // If mp3 exists → use it
+     if (word.audio) {
+         audioPlayer.pause();
+         audioPlayer.src = "audio/" + word.audio;
+         audioPlayer.load();
+         audioPlayer.play().catch(() => {});
+     }
+     // Otherwise → fallback to TTS
+     else {
+         speakJapanese(word.japanese);
+     }
  }
 </script>
 

@@ -136,6 +136,15 @@ France,フランス,,
 Holland,オランダ,,
 South Korea,かんこく,,
 
+[i-adjectives]
+red,あかい,,red.mp3
+blue/green,あおい,,blue.mp3
+black,くろい,,black.mp3
+white,しろい,,white.mp3
+yellow,きいろい,,
+big,おおきい,,big.mp3
+small,ちいさい,,small.mp3
+
 [L1]
 How do you do? (First time),はじめまして,,L1_1.mp3
 Hello,こんにちは,,002.mp3

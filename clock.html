@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Japanese Clock Practice</title>
+<style>
+body{
+    font-family: Arial, sans-serif;
+    text-align:center;
+    background:#f5f7fb;
+}
+
+h1{
+    margin-top:30px;
+}
+
+#clock{
+    margin:40px auto;
+    width:320px;
+    height:320px;
+    border:14px solid #2c2c2c;
+    border-radius:50%;
+    position:relative;
+    background: radial-gradient(circle,#ffffff 60%,#f0f0f0);
+    cursor:pointer;
+    box-shadow:0 8px 25px rgba(0,0,0,0.2);
+}
+
+.hand{
+    position:absolute;
+    left:50%;
+    bottom:50%;
+    transform-origin:bottom;
+    border-radius:4px;
+}
+
+#hour{
+    width:10px;
+    height:75px;
+    background:#222;
+}
+
+#minute{
+    width:6px;
+    height:120px;
+    background:#444;
+}
+
+.center{
+    width:16px;
+    height:16px;
+    background:#222;
+    border-radius:50%;
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+}
+
+.number{
+    position:absolute;
+    transform:translate(-50%,-50%);
+    font-weight:bold;
+    font-size:22px;
+}
+
+#answer{
+    font-size:32px;
+    margin-top:20px;
+    height:40px;
+}
+
+.instructions{
+    color:#555;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Japanese Clock Practice</h1>
+<p class="instructions">
+Look at the clock and say the time in Japanese.<br>
+Click the clock to reveal the answer and hear pronunciation.<br>
+Click again for a new random time.
+</p>
+
+<div style="margin-bottom:15px;">
+  <label>
+    <input type="radio" name="timeFormat" value="12" checked> 12-hour
+  </label>
+  &nbsp;&nbsp;
+  <label>
+      <input type="radio" name="timeFormat" value="24"> 24-hour
+  </label>
+</div>
+
+<div id="clock">
+<div id="hour" class="hand"></div>
+<div id="minute" class="hand"></div>
+<div class="center"></div>
+</div>
+
+<div id="digitalClock"></div>
+<div id="answer"></div>
+
+<script>
+
+ const timeFormatRadios = document.getElementsByName("timeFormat");
+ const clock = document.getElementById("clock");
+ const hourHand = document.getElementById("hour");
+ const minuteHand = document.getElementById("minute");
+ const digitalClock = document.getElementById("digitalClock");
+ const answer = document.getElementById("answer");
+
+ let timeFormat = 12;
+ let hour;
+ let minute;
+ let revealed=false;
+ let japaneseVoice=null;
+
+ function loadVoices(){
+     const preferredVoices = [
+         "Kyoko",        // macOS
+         "Otoya",        // macOS
+         "Google 日本語", // Android / Chrome
+         "Microsoft Nanami", // Windows
+         "Microsoft Keita"
+     ];
+
+     const voices = speechSynthesis.getVoices();
+     japaneseVoice =
+         voices.find(v => preferredVoices.includes(v.name)) ||
+         voices.find(v => v.lang === "ja-JP") ||
+         voices.find(v => v.lang.startsWith("ja"));
+
+ }
+
+ // Preload voices
+ speechSynthesis.onvoiceschanged = loadVoices;
+ loadVoices();
+
+ // Clickable 12h/24h radio button
+ timeFormatRadios.forEach(radio => {
+     radio.addEventListener("change", () => {
+         timeFormat = parseInt(radio.value);
+         generateTime(); // refresh time immediately when format changes
+     });
+ });
+
+ // Clickable clock
+ clock.addEventListener("click", ()=>{
+     if(!revealed){
+         reveal();
+         revealed=true;
+     }
+     else{
+         generateTime();
+     }
+ });
+
+ const hourReadings = [
+     "", "いちじ","にじ","さんじ","よじ","ごじ","ろくじ",
+     "しちじ","はちじ","くじ","じゅうじ","じゅういちじ","じゅうにじ"
+ ];
+
+ function minuteReading(m){
+     const base = {
+         1:"いっぷん",2:"にふん",3:"さんぷん",4:"よんぷん",5:"ごふん",
+         6:"ろっぷん",7:"ななふん",8:"はっぷん",9:"きゅうふん",10:"じゅっぷん"
+     };
+
+     if(m===0) return "";
+     if(m===30) return "はん";
+
+     if(m<=10) return base[m];
+     if(m<20) return "じゅう" + base[m-10];
+     if(m===20) return "にじゅっぷん";
+     if(m<30) return "にじゅう" + base[m-20];
+     if(m===40) return "よんじゅっぷん";
+     if(m<40) return "さんじゅう" + base[m-30];
+     if(m<50) return "よんじゅう" + base[m-40];
+     if(m===50) return "ごじゅっぷん";
+
+     return "ごじゅう" + base[m-50];
+ }
+
+ const hourReadingsRomaji = [
+     "", "ichiji","niji","sanji","yoji","goji","rokuji",
+     "shichiji","hachiji","kuji","juuji","juuichiji","juuniji"
+ ];
+
+ function minuteReadingRomaji(m){
+     const base = {
+         1:"ippun",2:"nifun",3:"sanpun",4:"yonpun",5:"gofun",
+         6:"roppun",7:"nanafun",8:"happun",9:"kyuufun",10:"juppun"
+     };
+
+     if(m===0) return "";
+     if(m===30) return "han";
+
+     if(m<=10) return base[m];
+     if(m<20) return "juu" + base[m-10];
+     if(m===20) return "nijuppun";
+     if(m<30) return "nijuu" + base[m-20];
+     if(m===40) return "yonjuuppun";
+     if(m<40) return "sanjuu" + base[m-30];
+     if(m<50) return "yonjuu" + base[m-40];
+     if(m===50) return "gojuuppun";
+
+     return "gojuu" + base[m-50];
+ }
+
+ function generateTime(){
+     if(timeFormat === 12){
+         hour = Math.floor(Math.random()*12)+1;   // 1–12
+     } else {
+         hour = Math.floor(Math.random()*24);   // 0–23
+     }
+     minute = Math.floor(Math.random() * 60); // 0–59
+
+     drawClock();
+     updateDigitalClock();
+     answer.innerHTML = "";
+     revealed = false;
+ }
+
+ function drawClock(){
+     const hourAngle = (hour%12)*30 + minute*0.5;
+     const minuteAngle = minute*6;
+
+     hourHand.style.transform = `translateX(-50%) rotate(${hourAngle}deg)`;
+     minuteHand.style.transform = `translateX(-50%) rotate(${minuteAngle}deg)`;
+ }
+
+ function updateDigitalClock() {
+     // Pad with leading zero when needed.
+     const hourStr = (timeFormat === 24 ? hour.toString().padStart(2, "0") : hour.toString());
+     const minuteStr = minute.toString().padStart(2, "0");
+     if(timeFormat === 24){
+         // Show 12h display with AM/PM
+         let hour12 = hour % 12;
+         if(hour12 === 0) hour12 = 12;
+         const period = hour < 12 ? "AM" : "PM"
+
+         // Show both 24h and 12h
+         digitalClock.textContent = `${hour12}:${minuteStr} ${period} (${hourStr}:${minuteStr})`;
+     } else {
+        digitalClock.textContent = `${hourStr}:${minuteStr}`;
+    }
+ }
+
+ function speak(text){
+     const utter = new SpeechSynthesisUtterance(text);
+     utter.lang="ja-JP";
+     utter.rate = 0.9;     // slightly slower for learning
+     utter.pitch = 1.05;
+     utter.volume = 1.0;
+
+     if(japaneseVoice){
+         utter.voice = japaneseVoice;
+     }
+
+     speechSynthesis.cancel(); // stop previous speech
+     speechSynthesis.speak(utter);
+ }
+
+ function reveal(){
+     let period = "";       // AM/PM in Japanese
+     let displayHour = hour;
+
+     if(timeFormat === 24){
+         // gozen (AM) or gogo(PM)
+         period = hour < 12 ? "午前" : "午後";
+         displayHour = hour % 12;
+         if(displayHour === 0) displayHour = 12; // 0 -> 12
+     } else {
+         displayHour = hour;
+     }
+
+     let japaneseText = hourReadings[displayHour];
+     let romajiText = hourReadingsRomaji[displayHour];
+
+     if(period) japaneseText = period + " " + japaneseText;
+     if(period) romajiText = (period === "午前" ? "gozen" : "gogo") + " " + romajiText;
+
+     if(minute===30){
+         japaneseText += " はん";
+         romajiText += " han";
+     }
+     else if(minute!==0){
+         japaneseText += " " + minuteReading(minute);
+         romajiText += " " + minuteReadingRomaji(minute);
+     }
+
+     answer.innerHTML = `
+         <span id="japaneseText" style="cursor:pointer;">
+             ${japaneseText}
+         </span>
+         <br>
+         <span id="romajiText" style="cursor:pointer; font-size:20px; color:#555;">
+             ${romajiText}
+         </span>
+     `;
+     speak(japaneseText);
+
+     // Add click events to replay audio
+     document.getElementById("japaneseText").addEventListener("click", () => speak(japaneseText));
+     document.getElementById("romajiText").addEventListener("click", () => speak(japaneseText));
+ }
+
+ function createNumbers(){
+     const r = 125;
+
+     for(let i=1;i<=12;i++){
+
+         const angle = (i-3)*30 * Math.PI/180;
+
+         const x = 160 + r*Math.cos(angle);
+         const y = 160 + r*Math.sin(angle);
+
+         const n=document.createElement("div");
+         n.className="number";
+         n.textContent=i;
+         n.style.left=x+"px";
+         n.style.top=y+"px";
+
+         clock.appendChild(n);
+     }
+ }
+
+ function createTicks(){
+     const center = 160;
+     const radius = 157;
+
+     for(let i = 0; i < 60; i++){
+
+         const tick = document.createElement("div");
+
+         const angle = i * 6;
+
+         tick.style.position = "absolute";
+         tick.style.left = center + "px";
+         tick.style.top = center + "px";
+
+         tick.style.transformOrigin = "center " + radius + "px";
+         tick.style.transform = `rotate(${angle}deg)`;
+
+         tick.style.marginLeft = "-1px";
+         tick.style.marginTop = "-" + radius + "px";
+
+         if(i % 5 === 0){
+             tick.style.width = "4px";
+             tick.style.height = "16px";
+             tick.style.background = "#222";
+         } else {
+             tick.style.width = "2px";
+             tick.style.height = "8px";
+             tick.style.background = "#888";
+         }
+
+         clock.appendChild(tick);
+     }
+ }
+
+ generateTime();
+ createNumbers();
+ createTicks();
+
+</script>
+
+</body>
+</html>

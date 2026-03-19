@@ -166,3 +166,12 @@ nurse,かんごふ,,L1_jobs5.mp3
 bank employee,ぎんこういん,,
 company employee,かいしゃいん,,
 shop assistant,てんいん,,L1_jobs8.mp3
+
+[Floors]
+Floor 1,いっかい,,floor_1.mp3
+Floor 2,にかい,,floor_2.mp3
+Floor 3,さんがい,,floor_3.mp3
+Floor 4,よんかい,,floor_4.mp3
+Floor 5,ごかい,,floor_5.mp3
+Floor 6,ろっかい,,floor_6.mp3
+Basement 1,ちか いっかい,,basement_1.mp3

@@ -180,3 +180,17 @@ Basement 1,ちか いっかい,,basement_1.mp3
 Go,いきます,,verb_go.mp3
 Come,きます,,verb_come.mp3
 Return/Come back,かえります,,verb_return.mp3
+
+[Locations]
+Airport,くうこう,,loc_airport.mp3
+Station,えき,,loc_station.mp3
+Branch (office of a company),ししゃ,,loc_office.mp3
+Park,こうえん,,loc_park.mp3
+House/home,うち,,loc_house.mp3
+Supermarket,スーパー,,loc_supermarket.mp3
+Restaurant,レストラン,,loc_restaurant.mp3
+Gym,ジム,,loc_gym.mp3
+Department store,デパート,,loc_store.mp3
+Bank,ぎんこう,,loc_bank.mp3
+University,だいがく,,loc_university.mp3
+Embassy,たいしかん,,loc_embassy.mp3

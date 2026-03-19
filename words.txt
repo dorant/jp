@@ -175,3 +175,8 @@ Floor 4,よんかい,,floor_4.mp3
 Floor 5,ごかい,,floor_5.mp3
 Floor 6,ろっかい,,floor_6.mp3
 Basement 1,ちか いっかい,,basement_1.mp3
+
+[Verbs]
+Go,いきます,,verb_go.mp3
+Come,きます,,verb_come.mp3
+Return/Come back,かえります,,verb_return.mp3

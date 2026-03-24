@@ -194,3 +194,17 @@ Department store,デパート,,loc_store.mp3
 Bank,ぎんこう,,loc_bank.mp3
 University,だいがく,,loc_university.mp3
 Embassy,たいしかん,,loc_embassy.mp3
+
+[Time expressions]
+Yesterday (Last day),きのう,,last_day.mp3
+Today (This day),きょう,,this_day.mp3
+Tomorrow (Next day),あした,,next_day.mp3
+Last week,せんしゅう,,last_week.mp3
+This week,こんしゅう,,this_week.mp3
+Next week,らいしゅう,,next_week.mp3
+Last month,せんげつ,,last_month.mp3
+This month,こんげつ,,this_month.mp3
+Next month,らいげつ,,next_month.mp3
+Last year,きょねん,,last_year.mp3
+This year,ことし,,this_year.mp3
+Next year,らいねん,,next_year.mp3

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Katakana Quiz</title>
+
+<style>
+ * { box-sizing: border-box; }
+
+ body {
+     margin: 0;
+     font-family: system-ui, -apple-system, sans-serif;
+     background: #f7f7fb;
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     justify-content: center;
+     height: 100vh;
+ }
+
+  h1 {
+    font-size: 1.5rem;
+    margin: 10px 0;
+  }
+
+  select {
+    margin: 10px;
+    padding: 8px;
+    font-size: 1rem;
+  }
+
+ .card {
+     font-size: clamp(80px, 20vw, 140px);
+     margin: 20px 0;
+ }
+
+  .choices {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  button {
+    padding: 18px;
+    font-size: 1.4rem;
+    border-radius: 12px;
+    border: none;
+    background: white;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    transition: transform 0.1s, background 0.2s;
+  }
+
+  button:active {
+    transform: scale(0.96);
+  }
+
+  .correct {
+    background: #4CAF50 !important;
+    color: white;
+  }
+
+  .wrong {
+    background: #f44336 !important;
+    color: white;
+  }
+</style>
+</head>
+
+<body>
+
+<h1>Katakana Quiz</h1>
+
+<select id="mode" onchange="newQuestion()">
+  <option value="basic">Basic</option>
+  <option value="dakuten">Dakuten</option>
+  <option value="combo">Combos</option>
+  <option value="all">All</option>
+</select>
+
+<div class="card" id="kana">ア</div>
+
+<div class="choices" id="choices"></div>
+
+<script>
+ const basicKana = [
+     { hira: "ア", roma: "a" }, { hira: "イ", roma: "i" }, { hira: "ウ", roma: "u" },
+     { hira: "エ", roma: "e" }, { hira: "オ", roma: "o" },
+     { hira: "カ", roma: "ka" }, { hira: "キ", roma: "ki" }, { hira: "ク", roma: "ku" },
+     { hira: "ケ", roma: "ke" }, { hira: "コ", roma: "ko" },
+     { hira: "サ", roma: "sa" }, { hira: "シ", roma: "shi" }, { hira: "ス", roma: "su" },
+     { hira: "セ", roma: "se" }, { hira: "ソ", roma: "so" },
+     { hira: "タ", roma: "ta" }, { hira: "チ", roma: "chi" }, { hira: "ツ", roma: "tsu" },
+     { hira: "テ", roma: "te" }, { hira: "ト", roma: "to" },
+     { hira: "ナ", roma: "na" }, { hira: "ニ", roma: "ni" }, { hira: "ヌ", roma: "nu" },
+     { hira: "ネ", roma: "ne" }, { hira: "ノ", roma: "no" },
+     { hira: "ハ", roma: "ha" }, { hira: "ヒ", roma: "hi" }, { hira: "フ", roma: "fu" },
+     { hira: "ヘ", roma: "he" }, { hira: "ホ", roma: "ho" },
+     { hira: "マ", roma: "ma" }, { hira: "ミ", roma: "mi" }, { hira: "ム", roma: "mu" },
+     { hira: "メ", roma: "me" }, { hira: "モ", roma: "mo" },
+     { hira: "ヤ", roma: "ya" }, { hira: "ユ", roma: "yu" }, { hira: "ヨ", roma: "yo" },
+     { hira: "ラ", roma: "ra" }, { hira: "リ", roma: "ri" }, { hira: "ル", roma: "ru" },
+     { hira: "レ", roma: "re" }, { hira: "ロ", roma: "ro" },
+     { hira: "ワ", roma: "wa" }, { hira: "ヲ", roma: "wo" }, { hira: "ン", roma: "n" }
+ ];
+
+ const dakutenKana = [
+     { hira: "ガ", roma: "ga" }, { hira: "ギ", roma: "gi" }, { hira: "グ", roma: "gu" },
+     { hira: "ゲ", roma: "ge" }, { hira: "ゴ", roma: "go" },
+     { hira: "ザ", roma: "za" }, { hira: "ジ", roma: "ji" }, { hira: "ズ", roma: "zu" },
+     { hira: "ゼ", roma: "ze" }, { hira: "ゾ", roma: "zo" },
+     { hira: "ダ", roma: "da" }, { hira: "ヂ", roma: "ji" }, { hira: "ヅ", roma: "zu" },
+     { hira: "デ", roma: "de" }, { hira: "ド", roma: "do" },
+     { hira: "バ", roma: "ba" }, { hira: "ビ", roma: "bi" }, { hira: "ブ", roma: "bu" },
+     { hira: "ベ", roma: "be" }, { hira: "ボ", roma: "bo" },
+     { hira: "パ", roma: "pa" }, { hira: "ピ", roma: "pi" }, { hira: "プ", roma: "pu" },
+     { hira: "ペ", roma: "pe" }, { hira: "ポ", roma: "po" }
+ ];
+
+ const comboKana = [
+     { hira: "キャ", roma: "kya" }, { hira: "キュ", roma: "kyu" }, { hira: "キョ", roma: "kyo" },
+     { hira: "シャ", roma: "sha" }, { hira: "シュ", roma: "shu" }, { hira: "ショ", roma: "sho" },
+     { hira: "チャ", roma: "cha" }, { hira: "チュ", roma: "chu" }, { hira: "チョ", roma: "cho" },
+     { hira: "ニャ", roma: "nya" }, { hira: "ニュ", roma: "nyu" }, { hira: "ニョ", roma: "nyo" },
+     { hira: "ヒャ", roma: "hya" }, { hira: "ヒュ", roma: "hyu" }, { hira: "ヒョ", roma: "hyo" },
+     { hira: "ミャ", roma: "mya" }, { hira: "ミュ", roma: "myu" }, { hira: "ミョ", roma: "myo" },
+     { hira: "リャ", roma: "rya" }, { hira: "リュ", roma: "ryu" }, { hira: "リョ", roma: "ryo" }
+ ];
+
+ let current;
+
+ function getPool() {
+     const mode = document.getElementById("mode").value;
+
+     if (mode === "basic") return basicKana;
+     if (mode === "dakuten") return dakutenKana;
+     if (mode === "combo") return comboKana;
+     return [...basicKana, ...dakutenKana, ...comboKana];
+ }
+
+ function getRandomKana(pool) {
+     return pool[Math.floor(Math.random() * pool.length)];
+ }
+
+ function shuffle(array) {
+     return array.sort(() => Math.random() - 0.5);
+ }
+
+ function speakKana(text) {
+     const utterance = new SpeechSynthesisUtterance(text);
+     utterance.lang = "ja-JP"; // Japanese voice
+     utterance.rate = 0.9;     // slightly slower for learning
+     utterance.pitch = 1.05;
+     utterance.volume = 1.0;
+
+     // Try to select a Japanese voice if available
+     const voices = speechSynthesis.getVoices();
+
+     // Prefer high quality native Japanese voices
+     const preferredVoices = [
+         "Kyoko",        // macOS
+         "Otoya",        // macOS
+         "Google 日本語", // Android / Chrome
+         "Microsoft Nanami", // Windows
+         "Microsoft Keita"
+     ];
+
+     let voice =
+         voices.find(v => preferredVoices.includes(v.name)) ||
+         voices.find(v => v.lang === "ja-JP") ||
+         voices.find(v => v.lang.startsWith("ja"));
+     if (voice) utterance.voice = voice;
+
+     speechSynthesis.cancel(); // stop previous speech
+     speechSynthesis.speak(utterance);
+ }
+
+ function newQuestion() {
+     const pool = getPool();
+     current = getRandomKana(pool);
+     document.getElementById("kana").textContent = current.hira;
+
+     let choices = [current];
+
+     while (choices.length < 4) {
+         let random = getRandomKana(pool);
+         if (!choices.includes(random)) {
+             choices.push(random);
+         }
+     }
+
+     choices = shuffle(choices);
+
+     const container = document.getElementById("choices");
+     container.innerHTML = "";
+
+     choices.forEach(choice => {
+         const btn = document.createElement("button");
+         btn.textContent = choice.roma;
+
+         btn.onclick = () => {
+             if (choice.roma === current.roma) {
+                 btn.classList.add("correct");
+                 speakKana(current.hira);
+                 setTimeout(newQuestion, 600);
+             } else {
+                 btn.classList.add("wrong");
+             }
+         };
+
+         container.appendChild(btn);
+     });
+ }
+
+ newQuestion();
+</script>
+
+</body>
+</html>

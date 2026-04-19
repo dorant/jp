@@ -208,3 +208,16 @@ Next month,らいげつ,,next_month.mp3
 Last year,きょねん,,last_year.mp3
 This year,ことし,,this_year.mp3
 Next year,らいねん,,next_year.mp3
+
+[Transport]
+Train,でんしゃ,,transport_train.mp3
+Subway,ちかてつ,,transport_subway.mp3
+Car,くるま,,transport_car.mp3
+Taxi,タクシー,,transport_taxi.mp3
+Shinkansen,しんかんせん,,transport_shinkansen.mp3
+Airplane,ひこうき,,transport_airplane.mp3
+Motorcycle,バイク,,transport_motorcycle.mp3
+Bicycle,じてんしゃ,,transport_bicycle.mp3
+Tram,ろめんでんしゃ,,
+Boat,ふね,,
+Bus,バス,,

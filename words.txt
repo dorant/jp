@@ -221,3 +221,12 @@ Bicycle,じてんしゃ,,transport_bicycle.mp3
 Tram,ろめんでんしゃ,,
 Boat,ふね,,
 Bus,バス,,
+
+[Days of the week]
+Sunday,にちようび,,days_sunday.mp3
+Monday,げつようび,,days_monday.mp3
+Tuesday,かようび,,days_tuesday.mp3
+Wednesday,すいようび,,days_wednesday.mp3
+Thursday,もくようび,,days_thursday.mp3
+Friday,きんようび,,days_friday.mp3
+Saturday,どようび,,days_saturday.mp3

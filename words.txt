@@ -241,3 +241,32 @@ Wednesday,すいようび,,days_wednesday.mp3
 Thursday,もくようび,,days_thursday.mp3
 Friday,きんようび,,days_friday.mp3
 Saturday,どようび,,days_saturday.mp3
+
+[Drink]
+Water,みず,,drink_water.mp3
+Coffee,コーヒー,,drink_coffee.mp3
+Tea (black),こうちゃ,,drink_black_tea.mp3
+Green tea,おちゃ,,drink_green_tea.mp3
+Juice,ジュース,,drink_juice.mp3
+Beer,ビール,,drink_beer.mp3
+Sake,にほんしゅ,,drink_sake.mp3
+Wine,ワイン,,drink_wine.mp3
+Red wine,あかワイン,,
+White wine,しろワイン,,
+
+[Food]
+Apple,りんご,,food_apple.mp3
+Mikan orange,みかん,,
+Beef,ぎゅうにく,,
+Cheese,チーズ,,
+Sallad,サラダ,,food_sallad.mp3
+Sandwich,サンドイッチ,,food_sandwich.mp3
+Curry,カレー,,food_curry.mp3
+Tenpura,てんぷら,,food_tenpura.mp3
+Steak,ステーキ,,food_steak.mp3
+Soup,スープ,,food_soup.mp3
+Ramen,ラーメン,,food_ramen.mp3
+Sushi,お すし,,food_sushi.mp3
+Cheese cake,チーズケーキ,,
+Apple pie,アップルパイ,,
+Ice cream,アイスクリーム,,food_ice_cream.mp3

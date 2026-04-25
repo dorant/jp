@@ -180,6 +180,17 @@ Basement 1,ちか いっかい,,basement_1.mp3
 Go,いきます,,verb_go.mp3
 Come,きます,,verb_come.mp3
 Return/Come back,かえります,,verb_return.mp3
+Eat,たべます,,verb_eat.mp3
+Drink,のみます,,verb_drink.mp3
+Buy,かいます,,verb_buy.mp3
+Read,よみます,,verb_read.mp3
+Listen to,ききます,,verb_listen.mp3
+See,みます,,verb_see.mp3
+Do,します,,
+Play tennis,テニスを します,,verb_play_tennis.mp3
+Study,べんきょうを します,,verb_study.mp3
+Shop,かいものを します,,verb_shop.mp3
+Work,しごとを します,,verb_work.mp3
 
 [Locations]
 Airport,くうこう,,loc_airport.mp3

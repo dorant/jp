@@ -139,13 +139,46 @@ Switzerland,スイス,,
 Italy,イタリア,,
 
 [i-adjectives]
+blue,あおい,,blue.mp3
 red,あかい,,red.mp3
-blue/green,あおい,,blue.mp3
+warm,あたたかい,,
+new/fresh,あたらしい,,
+hot,あつい,,
+dangerous,あぶない,,
+nice/good,いい,,
+busy,いそがしい,,
+hurt/sore/painful,いたい,,
+delicious/tasty,おいしい,,
+large/big,おおきい,,big.mp3
+interesting,おもしろい,,
 black,くろい,,black.mp3
+cold,さむい,,
 white,しろい,,white.mp3
-yellow,きいろい,,
-big,おおきい,,big.mp3
+cool,すずしい,,
+expensive,たかい,,
+fun/pleasant/enjoyable,たのしい,,
 small,ちいさい,,small.mp3
+near/close,ちかい,,
+boring/uninteresting,つまらない,,
+far,とおい,,
+old,ふるい,,
+difficult,むずかしい,,
+inexpensive,やすい,,
+bad,わるい,,
+
+[na-adjectives]
+various,いろいろ,,
+easy/simple,かんたん,,
+pretty/beautiful/clean,きれい,,
+quiet,しずか,,
+skilled/good at,じょうず,,
+like/favorite,すき,,
+lovely/nice,すてき,,
+hard/tough,たいへん,,
+lively,にぎやか,,
+free/not busy,ひま,,
+convenient,べんり,,
+famous,ゆうめい,,
 
 [L1]
 How do you do? (First time),はじめまして,,L1_1.mp3

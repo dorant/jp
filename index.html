@@ -150,6 +150,10 @@
 <div class="controls">
     <select id="chapterSelect" onchange="changeChapter()"></select>
     <button onclick="shuffleDeck()">Shuffle</button>
+    <label style="font-size:14px; display:flex; align-items:center; gap:10px;">
+        <input type="checkbox" id="listenModeToggle" onchange="toggleListenMode()" style="width:18px;height:18px;">
+        Listen mode (speaks English, auto-advances)
+    </label>
     <label style="font-size:14px; display:flex; flex-direction:column; gap:6px;">
         <div>Auto flip delay</div>
         <div style="display:flex; align-items:center; gap:10px;">
@@ -173,6 +177,8 @@
  let currentChapter = 0;
  let isEnglishFirst = true;
  let autoFlipTimeout = null;
+ let autoAdvanceTimeout = null;
+ let listenMode = false;
  let audioUnlocked = false;
  let swiper;
  const audioPlayer = document.getElementById("audioPlayer");
@@ -366,6 +372,7 @@
          on: {
              realIndexChange: function () {
                  updateProgress();
+                 clearTimeout(autoAdvanceTimeout);
 
                  document.querySelectorAll(".card").forEach(card => {
                      card.classList.remove("flipped");
@@ -373,6 +380,9 @@
 
                  if (!isEnglishFirst) {
                      playAudio();
+                 } else if (listenMode) {
+                     const word = words[this.realIndex];
+                     if (word) speakEnglish(word.english);
                  }
                  triggerAutoFlip();
              }
@@ -384,8 +394,8 @@
  }
 
  function flipCard(element, index) {
-     // Cancel pending auto flip on manual interaction
      clearTimeout(autoFlipTimeout);
+     clearTimeout(autoAdvanceTimeout);
 
      element.classList.toggle("flipped");
 
@@ -393,6 +403,66 @@
      const isFlipped = element.classList.contains("flipped");
      if (isEnglishFirst == isFlipped) {
          playAudio();
+     }
+ }
+
+ function toggleListenMode() {
+     listenMode = document.getElementById("listenModeToggle").checked;
+     if (listenMode) {
+         if (parseInt(flipDelaySlider.value) === 0) {
+             flipDelaySlider.value = 3000;
+             flipDelayLabel.innerText = "3.0s";
+             triggerAutoFlip();
+         }
+     } else {
+         clearTimeout(autoAdvanceTimeout);
+         speechSynthesis.cancel();
+     }
+ }
+
+ function speakEnglish(text, onEnd = null) {
+     if (!text) return;
+     const utterance = new SpeechSynthesisUtterance(text);
+     utterance.lang = "en-US";
+     utterance.rate = 0.9;
+     utterance.volume = 0.8;
+     if (onEnd) { utterance.onend = onEnd; utterance.onerror = onEnd; }
+     speechSynthesis.cancel();
+     speechSynthesis.speak(utterance);
+ }
+
+ function playAudioAndAdvance() {
+     const word = words[getCurrentIndex()];
+     if (!word) return;
+
+     const advance = () => {
+         clearTimeout(autoAdvanceTimeout);
+         autoAdvanceTimeout = setTimeout(() => swiper.slideNext(), parseInt(flipDelaySlider.value));
+     };
+
+     if (word.audio) {
+         audioPlayer.pause();
+         audioPlayer.src = "audio/" + word.audio;
+         audioPlayer.load();
+         audioPlayer.onended = () => { audioPlayer.onended = null; advance(); };
+         audioPlayer.onerror = () => { audioPlayer.onerror = null; advance(); };
+         audioPlayer.play().catch(() => advance());
+     } else {
+         const utterance = new SpeechSynthesisUtterance(word.japanese);
+         utterance.lang = "ja-JP";
+         utterance.rate = 0.9;
+         utterance.pitch = 1.05;
+         utterance.volume = 1.0;
+         const voices = speechSynthesis.getVoices();
+         const preferredVoices = ["Kyoko", "Otoya", "Google 日本語", "Microsoft Nanami", "Microsoft Keita"];
+         let voice = voices.find(v => preferredVoices.includes(v.name)) ||
+                     voices.find(v => v.lang === "ja-JP") ||
+                     voices.find(v => v.lang.startsWith("ja"));
+         if (voice) utterance.voice = voice;
+         utterance.onend = advance;
+         utterance.onerror = advance;
+         speechSynthesis.cancel();
+         speechSynthesis.speak(utterance);
      }
  }
 
@@ -407,10 +477,24 @@
          if (activeSlide && !activeSlide.classList.contains("flipped")) {
              activeSlide.classList.add("flipped");
              if (isEnglishFirst) {
-                 playAudio();
+                 listenMode ? playAudioAndAdvance() : playAudio();
+             } else if (listenMode) {
+                 speakEnglishAndAdvance();
              }
          }
      }, delay);
+ }
+
+ function speakEnglishAndAdvance() {
+     const word = words[getCurrentIndex()];
+     if (!word) return;
+
+     const advance = () => {
+         clearTimeout(autoAdvanceTimeout);
+         autoAdvanceTimeout = setTimeout(() => swiper.slideNext(), parseInt(flipDelaySlider.value));
+     };
+
+     speakEnglish(word.english, advance);
  }
 
  function updateProgress() {
